@@ -1,0 +1,78 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "office_desk",
+        "office_chair",
+        "conference_table",
+        "storage",
+        "home_sofa",
+        "home_table",
+        "home_chair",
+        "home_bed",
+        "accessories"
+      ],
+      "description": "Product category"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "office",
+        "home"
+      ],
+      "description": "Product type - office or home furniture"
+    },
+    "price": {
+      "type": "number",
+      "description": "Unit price"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "specifications": {
+      "type": "string",
+      "description": "Product specifications"
+    },
+    "dimensions": {
+      "type": "string",
+      "description": "Product dimensions"
+    },
+    "materials": {
+      "type": "string",
+      "description": "Materials used"
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Available colors"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URL"
+    },
+    "in_stock": {
+      "type": "boolean",
+      "default": true
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "type",
+    "price"
+  ]
+}
