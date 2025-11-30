@@ -42,28 +42,7 @@ const values = [
   }
 ];
 
-const team = [
-  {
-    name: 'Alexandra Chen',
-    role: 'Founder & CEO',
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80'
-  },
-  {
-    name: 'Marcus Rodriguez',
-    role: 'Head of Design',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'
-  },
-  {
-    name: 'Sarah Mitchell',
-    role: 'Operations Director',
-    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80'
-  },
-  {
-    name: 'David Kim',
-    role: 'Customer Experience',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80'
-  }
-];
+
 
 export default function About() {
   return (
@@ -203,39 +182,6 @@ export default function About() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">{value.title}</h3>
                 <p className="text-gray-600">{value.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team */}
-      <section className="py-24 bg-stone-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-gold text-sm font-semibold uppercase tracking-wider">Our Team</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3">Meet the Experts</h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="aspect-square rounded-2xl overflow-hidden mb-4">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
-                <p className="text-gold">{member.role}</p>
               </motion.div>
             ))}
           </div>
