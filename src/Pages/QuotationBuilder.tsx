@@ -465,7 +465,7 @@ const QuotationBuilder: React.FC = () => {
                               id="client_phone"
                               value={clientInfo.client_phone}
                               onChange={handleClientInfoChange('client_phone')}
-                              placeholder="+1 (555) 123-4567"
+                              placeholder="+27 78 076 6039"
                               className="pl-10"
                             />
                           </div>

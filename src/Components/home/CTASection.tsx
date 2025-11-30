@@ -50,9 +50,9 @@ export default function CTASection() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-6 text-gray-300">
-                <a href="tel:+15551234567" className="flex items-center gap-3 hover:text-gold transition-colors">
+                <a href="tel:+27 78 076 6039" className="flex items-center gap-3 hover:text-gold transition-colors">
                   <Phone className="w-5 h-5" />
-                  +1 (555) 123-4567
+                  +27 78 076 6039
                 </a>
                 <a href="mailto:contact@luxefurnish.com" className="flex items-center gap-3 hover:text-gold transition-colors">
                   <Mail className="w-5 h-5" />

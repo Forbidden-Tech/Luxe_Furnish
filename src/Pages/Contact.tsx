@@ -34,12 +34,12 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Visit Our Showroom',
-    lines: ['123 Design District', 'New York, NY 10001'],
+    lines: ['3 Simba Road', 'Sunninghill, Johannesburg' ],
   },
   {
     icon: Phone,
     title: 'Call Us',
-    lines: ['+1 (555) 123-4567', '+1 (555) 987-6543'],
+    lines: ['+27 78 076 6039', '+27 72 139 8501 '],
   },
   {
     icon: Mail,
@@ -244,7 +244,7 @@ const Contact: React.FC = () => {
                                 phone: e.target.value,
                               })
                             }
-                            placeholder="+1 (555) 123-4567"
+                            placeholder="+27 78 076 6039"
                             className="pl-10 h-12"
                           />
                         </div>
@@ -343,7 +343,7 @@ const Contact: React.FC = () => {
                 </p>
                 <div className="flex items-center gap-2 text-gold font-medium">
                   <MapPin className="w-4 h-4" />
-                  123 Design District, New York
+                  3 Simba Road, Sunninghill, Johannesburg
                 </div>
               </div>
             </motion.div>

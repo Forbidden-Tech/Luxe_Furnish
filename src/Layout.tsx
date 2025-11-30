@@ -203,10 +203,10 @@ export default function Layout() {
             <div>
               <h4 className="text-sm font-semibold uppercase tracking-wider mb-6 text-gold">Contact</h4>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li>123 Design District</li>
-                <li>New York, NY 10001</li>
+                <li>3 Simba Road</li>
+                <li>Sunninghill, Johannesburg</li>
                 <li className="pt-2">contact@luxefurnish.com</li>
-                <li>+1 (555) 123-4567</li>
+                <li>+27 78 076 6039</li>
               </ul>
             </div>
           </div>
