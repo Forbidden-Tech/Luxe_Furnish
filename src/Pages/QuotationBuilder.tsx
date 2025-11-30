@@ -3,19 +3,19 @@ import { base44 } from '@/api/base44Client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Textarea } from '@/Components/ui/textarea';
+import { Label } from '@/Components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { toast } from 'sonner';
-import { 
-  Plus, 
-  Minus, 
-  Trash2, 
-  FileText, 
-  Send, 
-  Package, 
+import {
+  Plus,
+  Minus,
+  Trash2,
+  FileText,
+  Send,
+  Package,
   ArrowRight,
   Calculator,
   User,
@@ -23,33 +23,86 @@ import {
   Mail,
   Phone,
   Calendar,
-  Percent
+  Percent,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, addDays } from 'date-fns';
 
-export default function QuotationBuilder() {
-  const [items, setItems] = useState([]);
-  const [clientInfo, setClientInfo] = useState({
+// ---- Types ----
+
+interface Product {
+  id: string | number;
+  name: string;
+  price: number;
+  category?: string | null;
+  image_url?: string | null;
+}
+
+interface QuoteItem {
+  product_id: Product['id'];
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  total: number;
+}
+
+interface ClientInfo {
+  client_name: string;
+  client_email: string;
+  client_phone: string;
+  client_company: string;
+  notes: string;
+}
+
+interface QuotationPayload extends ClientInfo {
+  quotation_number: string;
+  items: QuoteItem[];
+  subtotal: number;
+  discount_percent: number;
+  tax_percent: number;
+  total: number;
+  valid_until: string; // yyyy-MM-dd
+  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+}
+
+// If you know the real return type, replace unknown here
+type QuotationResponse = unknown;
+
+// ---- Component ----
+
+const QuotationBuilder: React.FC = () => {
+  const [items, setItems] = useState<QuoteItem[]>([]);
+  const [clientInfo, setClientInfo] = useState<ClientInfo>({
     client_name: '',
     client_email: '',
     client_phone: '',
     client_company: '',
-    notes: ''
+    notes: '',
   });
-  const [discount, setDiscount] = useState(0);
-  const [tax, setTax] = useState(10);
-  const [step, setStep] = useState(1);
+  const [discount, setDiscount] = useState<number>(0);
+  const [tax, setTax] = useState<number>(10);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  const { data: products = [] } = useQuery({
+  const { data: products = [] } = useQuery<Product[], Error>({
     queryKey: ['products-for-quote'],
-    queryFn: () => base44.entities.Product.list('name', 100),
+    queryFn: async () => {
+      const res = await base44.entities.Product.list('name', 100);
+      // Adjust this if your API returns { results: Product[] } etc.
+      return res as Product[];
+    },
   });
 
   useEffect(() => {
     const savedItems = localStorage.getItem('quoteItems');
     if (savedItems) {
-      setItems(JSON.parse(savedItems));
+      try {
+        const parsed = JSON.parse(savedItems) as QuoteItem[];
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
+      } catch (e) {
+        console.error('Failed to parse quoteItems from localStorage', e);
+      }
     }
   }, []);
 
@@ -57,9 +110,9 @@ export default function QuotationBuilder() {
     localStorage.setItem('quoteItems', JSON.stringify(items));
   }, [items]);
 
-  const createQuotation = useMutation({
+  const createQuotation = useMutation<QuotationResponse, Error, QuotationPayload>({
     mutationFn: (data) => base44.entities.Quotation.create(data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Quotation created successfully!');
       localStorage.removeItem('quoteItems');
       setItems([]);
@@ -68,37 +121,47 @@ export default function QuotationBuilder() {
         client_email: '',
         client_phone: '',
         client_company: '',
-        notes: ''
+        notes: '',
       });
       setStep(1);
-    }
+    },
   });
 
-  const updateQuantity = (index, newQuantity) => {
+  const updateQuantity = (index: number, newQuantity: number) => {
     if (newQuantity < 1) return;
-    const updated = [...items];
-    updated[index].quantity = newQuantity;
-    updated[index].total = updated[index].unit_price * newQuantity;
-    setItems(updated);
+    setItems((prev) => {
+      const updated = [...prev];
+      const item = updated[index];
+      if (!item) return prev;
+      const quantity = newQuantity;
+      const total = item.unit_price * quantity;
+      updated[index] = { ...item, quantity, total };
+      return updated;
+    });
   };
 
-  const removeItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
+  const removeItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const addProduct = (product) => {
-    const exists = items.find(item => item.product_id === product.id);
-    if (exists) {
-      toast.info('Product already added');
-      return;
-    }
-    setItems([...items, {
-      product_id: product.id,
-      product_name: product.name,
-      quantity: 1,
-      unit_price: product.price,
-      total: product.price
-    }]);
+  const addProduct = (product: Product) => {
+    setItems((prev) => {
+      const exists = prev.find((item) => item.product_id === product.id);
+      if (exists) {
+        toast.info('Product already added');
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          product_id: product.id,
+          product_name: product.name,
+          quantity: 1,
+          unit_price: product.price,
+          total: product.price,
+        },
+      ];
+    });
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
@@ -113,9 +176,14 @@ export default function QuotationBuilder() {
       return;
     }
 
+    if (items.length === 0) {
+      toast.error('Please add at least one product to the quotation');
+      return;
+    }
+
     const quotationNumber = `QT-${Date.now().toString(36).toUpperCase()}`;
-    
-    createQuotation.mutate({
+
+    const payload: QuotationPayload = {
       quotation_number: quotationNumber,
       ...clientInfo,
       items,
@@ -124,8 +192,27 @@ export default function QuotationBuilder() {
       tax_percent: tax,
       total,
       valid_until: format(addDays(new Date(), 30), 'yyyy-MM-dd'),
-      status: 'draft'
-    });
+      status: 'draft',
+    };
+
+    createQuotation.mutate(payload);
+  };
+
+  const handleClientInfoChange =
+    <K extends keyof ClientInfo>(key: K) =>
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        setClientInfo((prev) => ({ ...prev, [key]: value }));
+      };
+
+  const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    setDiscount(Number.isNaN(value) ? 0 : value);
+  };
+
+  const handleTaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    setTax(Number.isNaN(value) ? 0 : value);
   };
 
   return (
@@ -134,10 +221,15 @@ export default function QuotationBuilder() {
       <div className="bg-gray-900 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <span className="text-gold text-sm font-semibold uppercase tracking-wider">Build Your Quote</span>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mt-3">Quotation Builder</h1>
+            <span className="text-gold text-sm font-semibold uppercase tracking-wider">
+              Build Your Quote
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mt-3">
+              Quotation Builder
+            </h1>
             <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
-              Create a customized quotation for your furniture needs. Add products, set quantities, and get your quote.
+              Create a customized quotation for your furniture needs. Add products, set quantities,
+              and get your quote.
             </p>
           </div>
         </div>
@@ -147,20 +239,20 @@ export default function QuotationBuilder() {
         {/* Progress Steps */}
         <div className="flex items-center justify-center gap-4 mb-12">
           {[
-            { num: 1, label: 'Select Products' },
-            { num: 2, label: 'Client Details' },
-            { num: 3, label: 'Review & Submit' }
+            { num: 1 as 1, label: 'Select Products' },
+            { num: 2 as 2, label: 'Client Details' },
+            { num: 3 as 3, label: 'Review & Submit' },
           ].map((s, i) => (
             <React.Fragment key={s.num}>
               <button
+                type="button"
                 onClick={() => setStep(s.num)}
-                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all ${
-                  step === s.num 
-                    ? 'bg-gold text-white' 
-                    : step > s.num 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-white text-gray-500'
-                }`}
+                className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all ${step === s.num
+                  ? 'bg-gold text-white'
+                  : step > s.num
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-white text-gray-500'
+                  }`}
               >
                 <span className="w-8 h-8 rounded-full bg-current bg-opacity-20 flex items-center justify-center text-sm font-bold">
                   {s.num}
@@ -214,7 +306,9 @@ export default function QuotationBuilder() {
                             >
                               <div className="flex-1">
                                 <h4 className="font-medium text-gray-900">{item.product_name}</h4>
-                                <p className="text-sm text-gray-500">R{item.unit_price?.toLocaleString()} each</p>
+                                <p className="text-sm text-gray-500">
+                                  R{item.unit_price.toLocaleString()} each
+                                </p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button
@@ -225,7 +319,9 @@ export default function QuotationBuilder() {
                                 >
                                   <Minus className="w-4 h-4" />
                                 </Button>
-                                <span className="w-8 text-center font-medium">{item.quantity}</span>
+                                <span className="w-8 text-center font-medium">
+                                  {item.quantity}
+                                </span>
                                 <Button
                                   variant="outline"
                                   size="icon"
@@ -236,7 +332,7 @@ export default function QuotationBuilder() {
                                 </Button>
                               </div>
                               <div className="w-28 text-right">
-                                <p className="font-bold">R{item.total?.toLocaleString()}</p>
+                                <p className="font-bold">R{item.total.toLocaleString()}</p>
                               </div>
                               <Button
                                 variant="ghost"
@@ -260,28 +356,45 @@ export default function QuotationBuilder() {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto">
-                        {products.map((product) => (
-                          <button
-                            key={product.id}
-                            onClick={() => addProduct(product)}
-                            disabled={items.some(item => item.product_id === product.id)}
-                            className="flex items-center gap-4 p-4 rounded-xl border hover:border-gold hover:bg-stone-50 transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0">
-                              <img
-                                src={product.image_url || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=80'}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                              <p className="text-sm text-gray-500 capitalize">{product.category?.replace(/_/g, ' ')}</p>
-                              <p className="font-bold text-gold">R{product.price?.toLocaleString()}</p>
-                            </div>
-                            <Plus className="w-5 h-5 text-gold flex-shrink-0" />
-                          </button>
-                        ))}
+                        {products.map((product) => {
+                          const alreadyAdded = items.some(
+                            (item) => item.product_id === product.id,
+                          );
+                          return (
+                            <button
+                              key={product.id}
+                              type="button"
+                              onClick={() => addProduct(product)}
+                              disabled={alreadyAdded}
+                              className="flex items-center gap-4 p-4 rounded-xl border hover:border-gold hover:bg-stone-50 transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <div className="w-16 h-16 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0">
+                                <img
+                                  src={
+                                    product.image_url ||
+                                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=80'
+                                  }
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 truncate">
+                                  {product.name}
+                                </p>
+                                {product.category && (
+                                  <p className="text-sm text-gray-500 capitalize">
+                                    {product.category.replace(/_/g, ' ')}
+                                  </p>
+                                )}
+                                <p className="font-bold text-gold">
+                                  R{product.price.toLocaleString()}
+                                </p>
+                              </div>
+                              <Plus className="w-5 h-5 text-gold flex-shrink-0" />
+                            </button>
+                          );
+                        })}
                       </div>
                     </CardContent>
                   </Card>
@@ -311,7 +424,7 @@ export default function QuotationBuilder() {
                             <Input
                               id="client_name"
                               value={clientInfo.client_name}
-                              onChange={(e) => setClientInfo({...clientInfo, client_name: e.target.value})}
+                              onChange={handleClientInfoChange('client_name')}
                               placeholder="John Doe"
                               className="pl-10"
                             />
@@ -324,7 +437,7 @@ export default function QuotationBuilder() {
                             <Input
                               id="client_company"
                               value={clientInfo.client_company}
-                              onChange={(e) => setClientInfo({...clientInfo, client_company: e.target.value})}
+                              onChange={handleClientInfoChange('client_company')}
                               placeholder="Company Name"
                               className="pl-10"
                             />
@@ -338,7 +451,7 @@ export default function QuotationBuilder() {
                               id="client_email"
                               type="email"
                               value={clientInfo.client_email}
-                              onChange={(e) => setClientInfo({...clientInfo, client_email: e.target.value})}
+                              onChange={handleClientInfoChange('client_email')}
                               placeholder="john@example.com"
                               className="pl-10"
                             />
@@ -351,7 +464,7 @@ export default function QuotationBuilder() {
                             <Input
                               id="client_phone"
                               value={clientInfo.client_phone}
-                              onChange={(e) => setClientInfo({...clientInfo, client_phone: e.target.value})}
+                              onChange={handleClientInfoChange('client_phone')}
                               placeholder="+1 (555) 123-4567"
                               className="pl-10"
                             />
@@ -363,7 +476,7 @@ export default function QuotationBuilder() {
                         <Textarea
                           id="notes"
                           value={clientInfo.notes}
-                          onChange={(e) => setClientInfo({...clientInfo, notes: e.target.value})}
+                          onChange={handleClientInfoChange('notes')}
                           placeholder="Any special requirements or notes..."
                           rows={4}
                         />
@@ -393,24 +506,33 @@ export default function QuotationBuilder() {
                         <div>
                           <p className="text-sm text-gray-500">Client</p>
                           <p className="font-medium">{clientInfo.client_name || '-'}</p>
-                          {clientInfo.client_company && <p className="text-sm text-gray-600">{clientInfo.client_company}</p>}
+                          {clientInfo.client_company && (
+                            <p className="text-sm text-gray-600">{clientInfo.client_company}</p>
+                          )}
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Contact</p>
                           <p className="font-medium">{clientInfo.client_email || '-'}</p>
-                          {clientInfo.client_phone && <p className="text-sm text-gray-600">{clientInfo.client_phone}</p>}
+                          {clientInfo.client_phone && (
+                            <p className="text-sm text-gray-600">{clientInfo.client_phone}</p>
+                          )}
                         </div>
                       </div>
 
                       {/* Items */}
                       <div className="space-y-3 mb-6">
                         {items.map((item) => (
-                          <div key={item.product_id} className="flex justify-between items-center py-2 border-b">
+                          <div
+                            key={item.product_id}
+                            className="flex justify-between items-center py-2 border-b"
+                          >
                             <div>
                               <p className="font-medium">{item.product_name}</p>
-                              <p className="text-sm text-gray-500">{item.quantity} x R{item.unit_price?.toLocaleString()}</p>
+                              <p className="text-sm text-gray-500">
+                                {item.quantity} x R{item.unit_price.toLocaleString()}
+                              </p>
                             </div>
-                            <p className="font-bold">R{item.total?.toLocaleString()}</p>
+                            <p className="font-bold">R{item.total.toLocaleString()}</p>
                           </div>
                         ))}
                       </div>
@@ -426,7 +548,7 @@ export default function QuotationBuilder() {
                               min={0}
                               max={100}
                               value={discount}
-                              onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                              onChange={handleDiscountChange}
                               className="pl-10"
                             />
                           </div>
@@ -439,7 +561,7 @@ export default function QuotationBuilder() {
                               type="number"
                               min={0}
                               value={tax}
-                              onChange={(e) => setTax(parseFloat(e.target.value) || 0)}
+                              onChange={handleTaxChange}
                               className="pl-10"
                             />
                           </div>
@@ -467,13 +589,19 @@ export default function QuotationBuilder() {
             {/* Navigation */}
             <div className="flex gap-4">
               {step > 1 && (
-                <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep((prev) => (prev - 1) as 1 | 2 | 3)}
+                  className="flex-1"
+                  type="button"
+                >
                   Back
                 </Button>
               )}
               {step < 3 ? (
-                <Button 
-                  onClick={() => setStep(step + 1)} 
+                <Button
+                  type="button"
+                  onClick={() => setStep((prev) => (prev + 1) as 1 | 2 | 3)}
                   className="flex-1 bg-gold hover:bg-[#b8944d] text-white"
                   disabled={step === 1 && items.length === 0}
                 >
@@ -481,8 +609,9 @@ export default function QuotationBuilder() {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               ) : (
-                <Button 
-                  onClick={handleSubmit} 
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
                   className="flex-1 bg-gold hover:bg-[#b8944d] text-white"
                   disabled={createQuotation.isPending || items.length === 0}
                 >
@@ -538,4 +667,7 @@ export default function QuotationBuilder() {
       </div>
     </div>
   );
-}
+};
+
+export default QuotationBuilder;
+

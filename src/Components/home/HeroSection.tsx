@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Play, Award, Truck, Shield } from 'lucide-react';
+import { Button } from '@/Components/ui/button';
+import { ArrowRight, Award, Truck, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HeroSection() {
@@ -28,14 +27,14 @@ export default function HeroSection() {
             <span className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-gold text-sm font-medium mb-6">
               Premium Furniture Collection 2024
             </span>
-            
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
               Elevate Your
               <span className="block text-gold">Workspace</span>
             </h1>
-            
+
             <p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed">
-              Transform your office and home with our curated collection of premium furniture. 
+              Transform your office and home with our curated collection of premium furniture.
               Designed for comfort, built for excellence.
             </p>
 
@@ -82,7 +81,7 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div 
+      <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}

@@ -1,7 +1,6 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/Components/ui/toaster';
 import Layout from './Layout';
 import Home from './Pages/Home';
 import Products from './Pages/Products';

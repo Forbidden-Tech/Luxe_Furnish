@@ -1,61 +1,72 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import type React from 'react';
 import { base44 } from '@/api/base44Client';
 import { useMutation } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Textarea } from '@/Components/ui/textarea';
+import { Label } from '@/Components/ui/label';
+import { Card, CardContent } from '@/Components/ui/card';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { 
-  Send, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
+import {
+  Send,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
   MessageSquare,
   User,
   Building,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
+
+type ContactFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  subject: string;
+  message: string;
+};
 
 const contactInfo = [
   {
     icon: MapPin,
     title: 'Visit Our Showroom',
-    lines: ['123 Design District', 'New York, NY 10001']
+    lines: ['123 Design District', 'New York, NY 10001'],
   },
   {
     icon: Phone,
     title: 'Call Us',
-    lines: ['+1 (555) 123-4567', '+1 (555) 987-6543']
+    lines: ['+1 (555) 123-4567', '+1 (555) 987-6543'],
   },
   {
     icon: Mail,
     title: 'Email Us',
-    lines: ['contact@luxefurnish.com', 'sales@luxefurnish.com']
+    lines: ['contact@luxefurnish.com', 'sales@luxefurnish.com'],
   },
   {
     icon: Clock,
     title: 'Working Hours',
-    lines: ['Mon - Fri: 9:00 AM - 6:00 PM', 'Sat: 10:00 AM - 4:00 PM']
-  }
+    lines: ['Mon - Fri: 9:00 AM - 6:00 PM', 'Sat: 10:00 AM - 4:00 PM'],
+  },
 ];
 
-export default function Contact() {
-  const [formData, setFormData] = useState({
+const Contact: React.FC = () => {
+  const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     phone: '',
     company: '',
     subject: '',
-    message: ''
+    message: '',
   });
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const submitInquiry = useMutation({
-    mutationFn: (data) => base44.entities.ContactInquiry.create(data),
+  const submitInquiry = useMutation<unknown, Error, ContactFormData>({
+    mutationFn: (data: ContactFormData) =>
+      base44.entities.ContactInquiry.create(data),
     onSuccess: () => {
       setSubmitted(true);
       setFormData({
@@ -64,12 +75,12 @@ export default function Contact() {
         phone: '',
         company: '',
         subject: '',
-        message: ''
+        message: '',
       });
-    }
+    },
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       toast.error('Please fill in all required fields');
@@ -97,13 +108,15 @@ export default function Contact() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-3xl"
           >
-            <span className="text-gold text-sm font-semibold uppercase tracking-wider">Get in Touch</span>
+            <span className="text-gold text-sm font-semibold uppercase tracking-wider">
+              Get in Touch
+            </span>
             <h1 className="text-4xl md:text-6xl font-bold text-white mt-4 mb-6">
               Let's Create Something Beautiful
             </h1>
             <p className="text-xl text-gray-300 leading-relaxed">
-              Have a question or ready to start your project? We'd love to hear from you. 
-              Our team is here to help bring your vision to life.
+              Have a question or ready to start your project? We'd love to hear
+              from you. Our team is here to help bring your vision to life.
             </p>
           </motion.div>
         </div>
@@ -125,9 +138,13 @@ export default function Contact() {
                     <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mb-4">
                       <info.icon className="w-6 h-6 text-gold" />
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{info.title}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {info.title}
+                    </h3>
                     {info.lines.map((line, i) => (
-                      <p key={i} className="text-gray-600 text-sm">{line}</p>
+                      <p key={i} className="text-gray-600 text-sm">
+                        {line}
+                      </p>
                     ))}
                   </CardContent>
                 </Card>
@@ -152,17 +169,25 @@ export default function Contact() {
                   <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-6">
                     <CheckCircle className="w-10 h-10 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Message Sent!</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    Message Sent!
+                  </h2>
                   <p className="text-gray-600 mb-8">
-                    Thank you for reaching out. We'll get back to you within 24 hours.
+                    Thank you for reaching out. We'll get back to you within 24
+                    hours.
                   </p>
-                  <Button onClick={() => setSubmitted(false)} className="bg-gold hover:bg-[#b8944d] text-white">
+                  <Button
+                    onClick={() => setSubmitted(false)}
+                    className="bg-gold hover:bg-[#b8944d] text-white"
+                  >
                     Send Another Message
                   </Button>
                 </div>
               ) : (
                 <>
-                  <span className="text-gold text-sm font-semibold uppercase tracking-wider">Contact Form</span>
+                  <span className="text-gold text-sm font-semibold uppercase tracking-wider">
+                    Contact Form
+                  </span>
                   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-3 mb-8">
                     Send Us a Message
                   </h2>
@@ -176,7 +201,12 @@ export default function Contact() {
                           <Input
                             id="name"
                             value={formData.name}
-                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                name: e.target.value,
+                              })
+                            }
                             placeholder="John Doe"
                             className="pl-10 h-12"
                           />
@@ -190,7 +220,12 @@ export default function Contact() {
                             id="email"
                             type="email"
                             value={formData.email}
-                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                email: e.target.value,
+                              })
+                            }
                             placeholder="john@example.com"
                             className="pl-10 h-12"
                           />
@@ -203,7 +238,12 @@ export default function Contact() {
                           <Input
                             id="phone"
                             value={formData.phone}
-                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                phone: e.target.value,
+                              })
+                            }
                             placeholder="+1 (555) 123-4567"
                             className="pl-10 h-12"
                           />
@@ -216,7 +256,12 @@ export default function Contact() {
                           <Input
                             id="company"
                             value={formData.company}
-                            onChange={(e) => setFormData({...formData, company: e.target.value})}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                company: e.target.value,
+                              })
+                            }
                             placeholder="Company Name"
                             className="pl-10 h-12"
                           />
@@ -231,7 +276,12 @@ export default function Contact() {
                         <Input
                           id="subject"
                           value={formData.subject}
-                          onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              subject: e.target.value,
+                            })
+                          }
                           placeholder="How can we help?"
                           className="pl-10 h-12"
                         />
@@ -243,14 +293,19 @@ export default function Contact() {
                       <Textarea
                         id="message"
                         value={formData.message}
-                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            message: e.target.value,
+                          })
+                        }
                         placeholder="Tell us about your project or inquiry..."
                         rows={6}
                       />
                     </div>
 
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="w-full bg-gold hover:bg-[#b8944d] text-white h-14 text-base"
                       disabled={submitInquiry.isPending}
                     >
@@ -279,9 +334,12 @@ export default function Contact() {
 
               {/* Floating Card */}
               <div className="absolute bottom-8 left-8 right-8 bg-white p-6 rounded-2xl shadow-xl">
-                <h3 className="font-bold text-gray-900 mb-2">Visit Our Showroom</h3>
+                <h3 className="font-bold text-gray-900 mb-2">
+                  Visit Our Showroom
+                </h3>
                 <p className="text-gray-600 text-sm mb-4">
-                  Experience our furniture collection in person. Book a free consultation with our design experts.
+                  Experience our furniture collection in person. Book a free
+                  consultation with our design experts.
                 </p>
                 <div className="flex items-center gap-2 text-gold font-medium">
                   <MapPin className="w-4 h-4" />
@@ -301,18 +359,32 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="text-gold text-sm font-semibold uppercase tracking-wider">FAQ</span>
+            <span className="text-gold text-sm font-semibold uppercase tracking-wider">
+              FAQ
+            </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mt-3 mb-8">
               Common Questions
             </h2>
-            
+
             <div className="grid gap-4 text-left">
               {[
-                { q: 'What are your delivery options?', a: 'We offer free white-glove delivery for orders over $500. Standard delivery is available for all orders.' },
-                { q: 'Do you offer customization?', a: 'Yes! Many of our products can be customized in terms of size, materials, and finishes. Contact us for details.' },
-                { q: 'What is your return policy?', a: 'We offer a 30-day return policy for most items. Custom orders are final sale.' },
+                {
+                  q: 'What are your delivery options?',
+                  a: 'We offer free white-glove delivery for orders over $500. Standard delivery is available for all orders.',
+                },
+                {
+                  q: 'Do you offer customization?',
+                  a: 'Yes! Many of our products can be customized in terms of size, materials, and finishes. Contact us for details.',
+                },
+                {
+                  q: 'What is your return policy?',
+                  a: 'We offer a 30-day return policy for most items. Custom orders are final sale.',
+                },
               ].map((item, i) => (
-                <div key={i} className="p-6 bg-white/5 rounded-xl border border-white/10">
+                <div
+                  key={i}
+                  className="p-6 bg-white/5 rounded-xl border border-white/10"
+                >
                   <h4 className="font-semibold text-white mb-2">{item.q}</h4>
                   <p className="text-gray-400">{item.a}</p>
                 </div>
@@ -323,4 +395,7 @@ export default function Contact() {
       </section>
     </div>
   );
-}
+};
+
+export default Contact;
+

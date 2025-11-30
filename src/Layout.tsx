@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Menu, X, ShoppingCart, Home, Building2, FileText, Info, Phone, Package, ChevronDown } from 'lucide-react';
+import { Menu, X, Home, Building2, FileText, Info, Phone, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/ui/button';
 
 export default function Layout() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [productsDropdown, setProductsDropdown] = useState(false);
+  // const [productsDropdown, setProductsDropdown] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
@@ -51,11 +51,10 @@ export default function Layout() {
           color: #c9a96e;
         }
       `}</style>
-      
+
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -64,9 +63,8 @@ export default function Layout() {
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <span className={`text-xl font-bold tracking-tight ${
-                  isScrolled ? 'text-gray-900' : isHomePage ? 'text-white' : 'text-gray-900'
-                }`}>
+                <span className={`text-xl font-bold tracking-tight ${isScrolled ? 'text-gray-900' : isHomePage ? 'text-white' : 'text-gray-900'
+                  }`}>
                   LUXE
                 </span>
                 <span className="text-gold text-xl font-light">FURNISH</span>
@@ -79,13 +77,12 @@ export default function Layout() {
                 <Link
                   key={item.name}
                   to={createPageUrl(item.page) + (item.params || '')}
-                  className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full ${
-                    isScrolled 
-                      ? 'text-black hover:text-gold hover:bg-stone-100' 
-                      : isHomePage 
-                        ? 'text-white/90 hover:text-gold hover:bg-white/10'
-                        : 'text-black hover:text-gold hover:bg-white/10'
-                  }`}
+                  className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full ${isScrolled
+                    ? 'text-black hover:text-gold hover:bg-stone-100'
+                    : isHomePage
+                      ? 'text-white/90 hover:text-gold hover:bg-white/10'
+                      : 'text-black hover:text-gold hover:bg-white/10'
+                    }`}
                 >
                   {item.name}
                 </Link>
@@ -105,9 +102,8 @@ export default function Layout() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`lg:hidden p-2 rounded-lg ${
-                isScrolled ? 'text-gray-900' : isHomePage ? 'text-white' : 'text-gray-900'
-              }`}
+              className={`lg:hidden p-2 rounded-lg ${isScrolled ? 'text-gray-900' : isHomePage ? 'text-white' : 'text-gray-900'
+                }`}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -135,7 +131,7 @@ export default function Layout() {
                     {item.name}
                   </Link>
                 ))}
-                <Link 
+                <Link
                   to={createPageUrl('QuotationBuilder')}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block mt-4"
@@ -169,7 +165,7 @@ export default function Layout() {
                 </div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Premium furniture solutions for modern offices and elegant homes. 
+                Premium furniture solutions for modern offices and elegant homes.
                 Crafted with excellence since 2010.
               </p>
             </div>
@@ -180,8 +176,8 @@ export default function Layout() {
               <ul className="space-y-3">
                 {['Home', 'Products', 'QuotationBuilder', 'About', 'Contact'].map((page) => (
                   <li key={page}>
-                    <Link 
-                      to={createPageUrl(page)} 
+                    <Link
+                      to={createPageUrl(page)}
                       className="text-gray-400 hover:text-gold transition-colors text-sm"
                     >
                       {page === 'QuotationBuilder' ? 'Quotation Builder' : page}

@@ -1,13 +1,12 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/ui/button';
 import { motion } from 'framer-motion';
-import { 
-  Award, 
-  Users, 
-  Globe, 
-  Heart, 
+import {
+  Award,
+  Users,
+  Globe,
+  Heart,
   ArrowRight,
   CheckCircle,
   Sparkles
@@ -91,7 +90,7 @@ export default function About() {
               Crafting Spaces That Inspire
             </h1>
             <p className="text-xl text-gray-300 leading-relaxed">
-              For over 15 years, LuxeFurnish has been at the forefront of premium furniture design, 
+              For over 15 years, LuxeFurnish has been at the forefront of premium furniture design,
               transforming workspaces and homes into environments that inspire productivity and comfort.
             </p>
           </motion.div>
@@ -134,16 +133,16 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  Founded in 2010 by Alexandra Chen, LuxeFurnish began with a simple vision: 
+                  Founded in 2010 by Alexandra Chen, LuxeFurnish began with a simple vision:
                   to create furniture that combines timeless design with exceptional functionality.
                 </p>
                 <p>
-                  What started as a small workshop has grown into a leading furniture destination, 
-                  serving thousands of businesses and homes across the country. Our commitment to 
+                  What started as a small workshop has grown into a leading furniture destination,
+                  serving thousands of businesses and homes across the country. Our commitment to
                   quality and customer satisfaction has never wavered.
                 </p>
                 <p>
-                  Today, we continue to push the boundaries of design, working with talented 
+                  Today, we continue to push the boundaries of design, working with talented
                   craftsmen and using sustainable materials to create pieces that stand the test of time.
                 </p>
               </div>
@@ -255,7 +254,7 @@ export default function About() {
               Ready to Transform Your Space?
             </h2>
             <p className="text-gray-400 text-lg mb-10">
-              Let us help you create the perfect environment for work or home. 
+              Let us help you create the perfect environment for work or home.
               Get started with a free consultation today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

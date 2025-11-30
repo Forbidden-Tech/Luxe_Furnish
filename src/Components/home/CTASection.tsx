@@ -1,7 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/ui/button';
 import { ArrowRight, Phone, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -32,7 +31,7 @@ export default function CTASection() {
                 Ready to Transform Your Space?
               </h2>
               <p className="text-lg text-gray-300 mb-10 leading-relaxed">
-                Let our experts help you create the perfect environment. Get a customized quotation 
+                Let our experts help you create the perfect environment. Get a customized quotation
                 tailored to your needs and budget.
               </p>
 
